@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const complaintSchema = new mongoose.Schema({
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to the Student discriminator
+    ref: 'User', // reference to student
     required: [true, 'Student ID is required']
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to Faculty or Admin who handles the complaint
-    default: null // Can be assigned later
+    ref: 'User', // refers to admin/faculty incharge of complaints
+    default: null 
   },
   status: {
     type: String,

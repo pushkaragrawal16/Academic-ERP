@@ -8,11 +8,11 @@ const submissionSchema = new mongoose.Schema({
   },
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to the Student discriminator
+    ref: 'User', // refrences to student descriminator
     required: [true, 'Student ID is required']
   },
   submissionContent: {
-    type: String, // Could be a text answer, a file path, or a URL
+    type: String, // a file path,URL
     required: [true, 'Submission content is required'],
     trim: true
   },
@@ -24,7 +24,7 @@ const submissionSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Ensure a student can only submit once per assignment (Prevents duplicate entries)
+//prevents multiple submission
 submissionSchema.index({ assignmentId: 1, studentId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Submission', submissionSchema);

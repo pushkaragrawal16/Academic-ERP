@@ -8,7 +8,7 @@ const assignmentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['File', 'URL'], // Defines whether it is a file upload or a link
+    enum: ['File', 'URL'], //specific categorization
     required: [true, 'Assignment type is required']
   },
   resourceUrl: {
@@ -23,7 +23,7 @@ const assignmentSchema = new mongoose.Schema({
   },
   facultyId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to the Faculty discriminator
+    ref: 'User', // references faculty
     required: [true, 'Faculty ID is required']
   }
 }, {

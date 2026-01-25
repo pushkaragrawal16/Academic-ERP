@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const finalGradeSchema = new mongoose.Schema({
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to the Student discriminator
+    ref: 'User', //reference student users
     required: [true, 'Student ID is required']
   },
   courseId: {
@@ -18,7 +18,7 @@ const finalGradeSchema = new mongoose.Schema({
     max: 100
   },
   assignedGrade: {
-    type: String, // e.g., "A", "B+", "C", "F"
+    type: String,
     required: [true, 'Assigned Grade is required'],
     trim: true
   }
@@ -26,7 +26,7 @@ const finalGradeSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Ensure a student gets only one final grade per course
+//prevents multiple grades
 finalGradeSchema.index({ studentId: 1, courseId: 1 }, { unique: true });
 
 module.exports = mongoose.model('FinalGrade', finalGradeSchema);

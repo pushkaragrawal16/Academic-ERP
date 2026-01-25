@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const feedbackSchema = new mongoose.Schema({
   targetId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to Faculty/Admin being rated
+    ref: 'User', // references faculty and admin
     required: [true, 'Target ID is required']
   },
   message: {
@@ -12,10 +12,10 @@ const feedbackSchema = new mongoose.Schema({
     trim: true
   },
   rating: {
-    type: Number, // e.g., Scale of 1 to 5
+    type: Number, // scale of 0 to 10
     required: [true, 'Rating is required'],
-    min: 1,
-    max: 5
+    min: 0,
+    max: 10
   }
 }, {
   timestamps: true

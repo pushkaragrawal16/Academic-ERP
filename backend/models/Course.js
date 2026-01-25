@@ -10,22 +10,22 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Course code is required'],
     unique: true,
-    uppercase: true, // Ensures codes like "CS101" are stored consistently
+    uppercase: true,
     trim: true
   },
-  // Reference to the User Model (specifically a Faculty member)
+//reference to faculty
   facultyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', 
     required: [true, 'Faculty assigned is required']
   },
-  // Weightage structure (e.g., { midSem: 30, endSem: 70 })
+// grading structure
   weightage: {
     type: Object, 
     default: {}
   },
-  // Rules like "Absolute Grading" or "Relative Grading"
-  // Array of references to the User Model (specifically Students)
+
+//list of students
   studentsEnrolled: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
