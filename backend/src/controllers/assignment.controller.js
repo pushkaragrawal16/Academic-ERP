@@ -1,4 +1,5 @@
 const Assignment = require('../../models/Assignment');
+const Submission = require('../../models/Submission');
 const Branch = require('../../models/Branch');
 const { Student } = require('../../models/User');
 const { cloudinary } = require('../utils/cloudinary.utils');
@@ -110,4 +111,64 @@ const getCourseAssignments = async (req, res) => {
   }
 };
 
-module.exports = { createAssignment, deleteAssignment, getCourseAssignments };
+const submitAssignment = async (req, res) => {
+  const user_id = req.user_id;
+  const user_role = req.user_role;
+  const { assignmentId } = req.params;
+
+  try {
+    if (user_role !== 'Student') {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+      return res.status(404).json({ success: false, message: 'Assignment not found' });
+    }
+
+    if (assignment.dueDate && new Date() > assignment.dueDate) {
+      return res.status(400).json({ success: false, message: 'Assignment deadline has passed' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No PDF file uploaded' });
+    }
+
+    const submission = new Submission({
+      assignmentId,
+      studentId: user_id,
+      cloudinaryUrl: req.file.path,
+      cloudinaryPublicId: req.file.filename
+    });
+
+    await submission.save();
+
+    return res.status(201).json({ success: true, message: 'Assignment submitted successfully', submission });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ success: false, message: 'You have already submitted this assignment' });
+    }
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getAssignmentSubmissions = async (req, res) => {
+  const user_role = req.user_role;
+  const { assignmentId } = req.params;
+
+  try {
+    if (user_role !== 'Faculty') {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const submissions = await Submission.find({ assignmentId })
+      .populate('studentId', 'name enrollmentNo')
+      .lean();
+
+    return res.status(200).json({ success: true, submissions });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+module.exports = { createAssignment, deleteAssignment, getCourseAssignments, submitAssignment, getAssignmentSubmissions };

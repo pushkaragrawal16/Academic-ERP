@@ -2,7 +2,6 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const Branch = require('../../models/Branch');
 const { Student } = require('../../models/User');
-const Course = require('../../models/Course');
 
 let io;
 

@@ -15,41 +15,18 @@ const ALLOWED_PPT_MIMES = [
   'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 ];
 
-// storage for timetable PDFs
 const pdfStorage = new CloudinaryStorage({
   cloudinary,
   params: { folder: 'timetables', resource_type: 'raw', format: 'pdf' }
 });
 
-// storage for course material (PDFs + PPTs) — raw keeps original format
 const materialStorage = new CloudinaryStorage({
   cloudinary,
-  params: (req, file) => ({
+  params: (_req, file) => ({
     folder: 'course_materials',
     resource_type: 'raw',
     format: file.mimetype === ALLOWED_PDF_MIME ? 'pdf' : 'pptx'
   })
-});
-
-const uploadPDF = multer({
-  storage: pdfStorage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    file.mimetype === ALLOWED_PDF_MIME
-      ? cb(null, true)
-      : cb(new Error('Only PDF files are allowed'), false);
-  }
-});
-
-const uploadMaterial = multer({
-  storage: materialStorage,
-  limits: { fileSize: 50 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const allowed = [ALLOWED_PDF_MIME, ...ALLOWED_PPT_MIMES];
-    allowed.includes(file.mimetype)
-      ? cb(null, true)
-      : cb(new Error('Only PDF and PPT/PPTX files are allowed'), false);
-  }
 });
 
 const assignmentStorage = new CloudinaryStorage({
@@ -57,14 +34,42 @@ const assignmentStorage = new CloudinaryStorage({
   params: { folder: 'assignments', resource_type: 'raw', format: 'pdf' }
 });
 
-const uploadAssignment = multer({
-  storage: assignmentStorage,
-  limits: { fileSize: 20 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    file.mimetype === ALLOWED_PDF_MIME
-      ? cb(null, true)
-      : cb(new Error('Only PDF files are allowed'), false);
+const submissionStorage = new CloudinaryStorage({
+  cloudinary,
+  params: { folder: 'submissions', resource_type: 'raw', format: 'pdf' }
+});
+
+const uploadPDF = multer({
+  storage: pdfStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    file.mimetype === ALLOWED_PDF_MIME ? cb(null, true) : cb(new Error('Only PDF files are allowed'), false);
   }
 });
 
-module.exports = { uploadPDF, uploadMaterial, uploadAssignment, cloudinary };
+const uploadMaterial = multer({
+  storage: materialStorage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = [ALLOWED_PDF_MIME, ...ALLOWED_PPT_MIMES];
+    allowed.includes(file.mimetype) ? cb(null, true) : cb(new Error('Only PDF and PPT/PPTX files are allowed'), false);
+  }
+});
+
+const uploadAssignment = multer({
+  storage: assignmentStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    file.mimetype === ALLOWED_PDF_MIME ? cb(null, true) : cb(new Error('Only PDF files are allowed'), false);
+  }
+});
+
+const uploadSubmission = multer({
+  storage: submissionStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    file.mimetype === ALLOWED_PDF_MIME ? cb(null, true) : cb(new Error('Only PDF files are allowed'), false);
+  }
+});
+
+module.exports = { uploadPDF, uploadMaterial, uploadAssignment, uploadSubmission, cloudinary };

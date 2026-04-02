@@ -15,13 +15,10 @@ const markAttendance = async (req, res) => {
       return res.status(403).json({ success: false, message: 'You are not authorized to perform this action' });
     }
 
-    const records = [];
+    const enrollmentNos = studentList.map(s => s.enrollmentNo);
+    const students = await Student.find({ enrollmentNo: { $in: enrollmentNos } }).select('_id').lean();
 
-    for (const currStudent of studentList) {
-      const exists = await Student.findOne({ enrollmentNo: currStudent.enrollmentNo }).lean();
-      if (!exists) continue;
-      records.push({ studentId: exists._id, status: 'Present' });
-    }
+    const records = students.map(s => ({ studentId: s._id, status: 'Present' }));
 
     const attendance = new Attendance({ courseId, date, records });
     await attendance.save();
